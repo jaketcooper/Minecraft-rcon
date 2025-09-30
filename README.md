@@ -51,7 +51,7 @@ A powerful VS Code extension that provides a fully-featured terminal interface f
 4. Click Install
 
 ### From VSIX Package
-1. Download the `.vsix` file from [Releases](https://github.com/jaketcooper/Minecraft-rcon-vscode-extention/releases)
+1. Download the `.vsix` file from [Releases](https://github.com/jaketcooper/Minecraft-rcon/releases)
 2. Open VS Code
 3. Press `Ctrl+Shift+P` and run "Extensions: Install from VSIX..."
 4. Select the downloaded `.vsix` file
@@ -162,7 +162,7 @@ Contributions are welcome! Please feel free to submit pull requests or create is
 ### Development Setup
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/minecraft-rcon-terminal.git
+git clone https://github.com/yourusername/minecraft-rcon.git
 
 # Install dependencies
 npm install
@@ -205,8 +205,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 💬 Support
 
-- **Issues**: [GitHub Issues](https://github.com/jaketcooper/Minecraft-rcon-vscode-extention/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/jaketcooper/Minecraft-rcon-vscode-extention/discussions)
+- **Issues**: [GitHub Issues](https://github.com/jaketcooper/Minecraft-rcon/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/jaketcooper/Minecraft-rcon/discussions)
 - **Discord**: [Join our Discord](https://discord.gg/un1t)
 
 ---

@@ -4,6 +4,10 @@
   "description": "A minimal RCON client for Minecraft servers inside VS Code (prototype)",
   "version": "1.0.0",
   "publisher": "jaketcooper",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaketcooper/minecraft-rcon"
+  },
   "engines": {
     "vscode": "^1.104.0"
   },
