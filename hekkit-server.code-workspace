@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../hekkit-server"
+		},
+		{
+			"path": "../curseforge/minecraft/Instances/hekkit"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}

@@ -2,9 +2,10 @@
   "name": "minecraft-rcon",
   "displayName": "Minecraft RCON",
   "description": "A minimal RCON client for Minecraft servers inside VS Code (prototype)",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "publisher": "jaketcooper",
   "engines": {
-    "vscode": "^1.80.0"
+    "vscode": "^1.104.0"
   },
   "categories": ["Other"],
   "activationEvents": [
@@ -15,25 +16,41 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -w -p ./",
-    "pretest": "npm run compile",
-    "test": "node ./out/test/runTest.js"
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "@types/node": "^18.0.0",
-    "@types/vscode": "^1.80.0",
-    "vscode-test": "^2.0.0"
+    "@types/vscode": "^1.104.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "eslint": "^9.34.0",
+    "typescript": "^5.9.2",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2"
   },
   "dependencies": {
-    "rcon-client": "^4.0.0"
+    "rcon-client": "^4.2.5"
   },
   "contributes": {
     "commands": [
       {
         "command": "minecraftRcon.connect",
-        "title": "Minecraft RCON: Connect"
+        "title": "Minecraft RCON: Connect",
+        "icon": "$(plug)"
       }
     ],
+    "terminal": {
+      "profiles": [
+        {
+          "id": "minecraftRcon.terminal",
+          "title": "Minecraft Server",
+          "icon": "server"
+        }
+      ]
+    },
     "configuration": {
       "type": "object",
       "title": "Minecraft RCON",
@@ -45,8 +62,13 @@
         },
         "minecraftRcon.defaultPort": {
           "type": "number",
-          "default": 25575,
+          "default": 25565,
           "description": "Default RCON port"
+        },
+        "minecraftRcon.defaultPassword": {
+          "type": "string",
+          "default": "",
+          "description": "Default RCON password"
         }
       }
     }

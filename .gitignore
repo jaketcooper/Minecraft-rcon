@@ -1,0 +1,46 @@
+# Node modules
+node_modules/
+
+# Build outputs
+dist/
+out/
+*.vsix
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# IDE files
+.vscode/settings.json
+.idea/
+*.workspace
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Temporary folders
+tmp/
+temp/

@@ -1,11 +1,11 @@
-import { connect, RCON } from 'rcon-client';
+import { Rcon } from 'rcon-client';
 import * as vscode from 'vscode';
 
 export class RconController {
   private host: string;
   private port: number;
   private password: string;
-  private client: RCON | null = null;
+  private client: Rcon | null = null;
   private output: vscode.OutputChannel;
 
   constructor(host: string, port: number, password: string, output: vscode.OutputChannel) {
@@ -16,7 +16,8 @@ export class RconController {
   }
 
   public async connect(): Promise<void> {
-    this.client = await connect({ host: this.host, port: this.port, password: this.password });
+    this.client = new Rcon({ host: this.host, port: this.port, password: this.password });
+    await this.client.connect();
 
     // Hook simple event logging if available
     if (this.client) {
