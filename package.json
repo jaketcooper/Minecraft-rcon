@@ -2,7 +2,7 @@
   "name": "minecraft-rcon",
   "displayName": "Minecraft RCON",
   "description": "A minimal RCON client for Minecraft servers inside VS Code (prototype)",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "jaketcooper",
   "repository": {
     "type": "git",
@@ -11,7 +11,9 @@
   "engines": {
     "vscode": "^1.104.0"
   },
-  "categories": ["Other"],
+  "categories": [
+    "Other"
+  ],
   "activationEvents": [
     "onCommand:minecraftRcon.connect"
   ],
