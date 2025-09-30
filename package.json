@@ -1,0 +1,54 @@
+{
+  "name": "minecraft-rcon",
+  "displayName": "Minecraft RCON",
+  "description": "A minimal RCON client for Minecraft servers inside VS Code (prototype)",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "onCommand:minecraftRcon.connect"
+  ],
+  "main": "./out/extension.js",
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -w -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.80.0",
+    "vscode-test": "^2.0.0"
+  },
+  "dependencies": {
+    "rcon-client": "^4.0.0"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "minecraftRcon.connect",
+        "title": "Minecraft RCON: Connect"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Minecraft RCON",
+      "properties": {
+        "minecraftRcon.defaultHost": {
+          "type": "string",
+          "default": "127.0.0.1",
+          "description": "Default RCON host"
+        },
+        "minecraftRcon.defaultPort": {
+          "type": "number",
+          "default": 25575,
+          "description": "Default RCON port"
+        }
+      }
+    }
+  }
+}
