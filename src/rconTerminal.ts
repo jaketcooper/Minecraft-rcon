@@ -691,7 +691,7 @@ export class RconTerminal implements vscode.Pseudoterminal {
   }
 
   private handleTabComplete(): void {
-    if (!this.autocomplete.isReady) return;
+    if (!this.autocomplete.isReady) {return;}
 
     const now = Date.now();
     const timeSinceLastTab = now - this.lastTabTime;
@@ -702,7 +702,7 @@ export class RconTerminal implements vscode.Pseudoterminal {
       if (!this.isShowingSuggestions) {
         // Initialize suggestions
         const result = this.autocomplete.getSuggestions(this.currentLine);
-        if (result.suggestions.length === 0) return;
+        if (result.suggestions.length === 0) {return;}
         
         this.currentSuggestions = result.suggestions;
         this.isShowingSuggestions = true;
@@ -724,7 +724,7 @@ export class RconTerminal implements vscode.Pseudoterminal {
   }
 
   private handleShiftTab(): void {
-    if (!this.autocomplete.isReady) return;
+    if (!this.autocomplete.isReady) {return;}
     
     const now = Date.now();
     this.lastTabTime = now;
@@ -732,7 +732,7 @@ export class RconTerminal implements vscode.Pseudoterminal {
     if (!this.isShowingSuggestions) {
       // Initialize suggestions
       const result = this.autocomplete.getSuggestions(this.currentLine);
-      if (result.suggestions.length === 0) return;
+      if (result.suggestions.length === 0) {return;}
       
       this.currentSuggestions = result.suggestions;
       this.isShowingSuggestions = true;
@@ -754,7 +754,7 @@ export class RconTerminal implements vscode.Pseudoterminal {
   }
 
   private completeSelectedSuggestion(): void {
-    if (!this.isShowingSuggestions || this.suggestionIndex < 0) return;
+    if (!this.isShowingSuggestions || this.suggestionIndex < 0) {return;}
     
     const suggestion = this.currentSuggestions[this.suggestionIndex];
     
@@ -784,10 +784,13 @@ export class RconTerminal implements vscode.Pseudoterminal {
   }
 
   private showInlineSuggestions(): void {
-    if (!this.autocomplete.isReady) return;
+    if (!this.autocomplete.isReady) {return;}
 
     // Get suggestions for current input
     const result = this.autocomplete.getSuggestions(this.currentLine);
+    
+    // Store the command path from the result
+    this.currentCommandPath = result.commandPath || '';
     
     // Extract the command name from the current line
     const commandMatch = this.currentLine.match(/^(\/?\w+)/);
@@ -981,7 +984,7 @@ export class RconTerminal implements vscode.Pseudoterminal {
   }
 
   private navigateSuggestions(direction: 'up' | 'down'): void {
-    if (!this.isShowingSuggestions || this.currentSuggestions.length === 0) return;
+    if (!this.isShowingSuggestions || this.currentSuggestions.length === 0) {return;}
     
     // Arrow keys don't enter tab mode and don't complete
     this.tabMode = false;
@@ -1003,7 +1006,7 @@ export class RconTerminal implements vscode.Pseudoterminal {
   }
   
   private jumpToFirstSuggestion(): void {
-    if (!this.isShowingSuggestions || this.currentSuggestions.length === 0) return;
+    if (!this.isShowingSuggestions || this.currentSuggestions.length === 0) {return;}
     
     this.tabMode = false;
     this.suggestionIndex = 0;
@@ -1013,7 +1016,7 @@ export class RconTerminal implements vscode.Pseudoterminal {
   }
   
   private jumpToLastSuggestion(): void {
-    if (!this.isShowingSuggestions || this.currentSuggestions.length === 0) return;
+    if (!this.isShowingSuggestions || this.currentSuggestions.length === 0) {return;}
     
     this.tabMode = false;
     this.suggestionIndex = this.currentSuggestions.length - 1;
@@ -1023,7 +1026,7 @@ export class RconTerminal implements vscode.Pseudoterminal {
   }
   
   private nextPage(): void {
-    if (!this.isShowingSuggestions || this.currentSuggestions.length === 0) return;
+    if (!this.isShowingSuggestions || this.currentSuggestions.length === 0) {return;}
     
     this.tabMode = false;
     
@@ -1045,7 +1048,7 @@ export class RconTerminal implements vscode.Pseudoterminal {
   }
   
   private previousPage(): void {
-    if (!this.isShowingSuggestions || this.currentSuggestions.length === 0) return;
+    if (!this.isShowingSuggestions || this.currentSuggestions.length === 0) {return;}
     
     this.tabMode = false;
     
@@ -1083,7 +1086,7 @@ export class RconTerminal implements vscode.Pseudoterminal {
     }
     
     const filteredText = text.replace(/[\x00-\x08\x0a-\x1f\x7f]/g, '');
-    if (filteredText.length === 0) return;
+    if (filteredText.length === 0) {return;}
     
     // Clear tab mode when typing
     this.tabMode = false;
