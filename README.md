@@ -2,17 +2,19 @@
 
 A powerful VS Code extension that provides a fully-featured terminal interface for managing Minecraft servers via RCON (Remote Console) protocol. Features intelligent command autocomplete, Minecraft formatting support, and a rich terminal experience.
 
+![demo-gif](images/demo-autocomplete.gif)
+
 ## ✨ Features
 
 ### 🎮 Smart Command Autocomplete
 - **Intelligent suggestions** - Real-time command completion as you type
 - **Tab completion** - Minecraft-style tab cycling through suggestions
 - **Argument hints** - Context-aware help showing required and optional arguments
-- **Subcommand support** - Deep navigation through complex command trees
+- **Search support** - Deep navigation through command trees
 - **Command caching** - Fast autocomplete after initial load
 
 ### 🖥️ Rich Terminal Experience
-- **Minecraft color codes** - Full support for all Minecraft formatting codes (§0-§f, §l, §o, etc.)
+- **Minecraft color codes** - Full support for all Minecraft formatting codes (§0-§f, §d, §c, etc.)
 - **Command history** - Navigate through previous commands with Up/Down arrows
 - **Text selection** - Select, copy, cut, and paste with standard keyboard shortcuts
 - **Multi-line output** - Properly formatted server responses
