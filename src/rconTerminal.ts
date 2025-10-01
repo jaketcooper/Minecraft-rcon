@@ -1172,8 +1172,21 @@ export class RconTerminal implements vscode.Pseudoterminal {
     }
   }
 
-  private showArgumentsInList(): void {
-    if (!this.currentArgumentHelp) return;
+
+
+
+
+
+
+
+
+
+
+
+
+
+private showArgumentsInList(): void {
+    if (!this.currentArgumentHelp) {return;}
     
     // Save cursor position
     this.writeEmitter.fire('\x1b7');
@@ -1191,88 +1204,109 @@ export class RconTerminal implements vscode.Pseudoterminal {
     
     let lineCount = 1;
     
-    // Parse the current command to determine which argument position we're at
-    const parts = this.currentLine.trim().split(' ');
-    const commandName = parts[0];
+    // Use the command path from getSuggestions - no more parsing needed!
+    const fullCommandPath = this.currentCommandPath || this.currentLine.split(' ')[0] || '/';
     
-    // Count only COMPLETED arguments (those that have been typed and followed by space)
-    // If we end with a space, we're ready for the next argument
-    // If we don't end with a space and have more than just the command, we're typing an argument
-    let currentArgIndex = -1;
+    // Parse the current input to determine argument position
+    const parts = this.currentLine.trim().split(' ').filter(p => p.length > 0);
     const hasTrailingSpace = this.currentLine.endsWith(' ');
     
-    if (parts.length === 1 && !hasTrailingSpace) {
-      // Still typing the command itself, no arguments yet
-      currentArgIndex = -1;
-    } else if (parts.length === 1 && hasTrailingSpace) {
-      // Just the command with a space, ready for first argument
-      currentArgIndex = 0;
-    } else {
-      // We have parts beyond the command
-      const argCount = parts.length - 1; // Number of space-separated parts after command
-      
-      if (hasTrailingSpace) {
-        // Ended with space, ready for next argument
-        currentArgIndex = argCount;
-      } else {
-        // Still typing current argument
-        currentArgIndex = argCount - 1;
-      }
+    // Count how many parts of the command path we have
+    const commandParts = fullCommandPath.substring(1).split(' ').filter(p => p.length > 0);
+    const commandPartCount = commandParts.length;
+    
+    // Count arguments - everything after the command path
+    const argumentParts = parts.slice(commandPartCount);
+    
+    // Determine how many arguments are COMPLETED (followed by space)
+    let completedArgCount = 0;
+    if (hasTrailingSpace) {
+      // If we have trailing space, all typed arguments are completed
+      completedArgCount = argumentParts.length;
+    } else if (argumentParts.length > 0) {
+      // If we're typing an argument, all previous ones are completed
+      completedArgCount = argumentParts.length - 1;
     }
     
-    // Parse argument help string to get individual arguments
-    const argPattern = /(<[^>]+>|\[[^\]]+\]|\|)/g;
+    // Determine which argument is currently being typed/active
+    let currentArgIndex = -1;
+    if (argumentParts.length === 0 && !hasTrailingSpace) {
+      // Still typing command/subcommand
+      currentArgIndex = -1;
+    } else if (hasTrailingSpace) {
+      // Ready for next argument after what we've typed
+      currentArgIndex = argumentParts.length;
+    } else {
+      // Currently typing an argument
+      currentArgIndex = argumentParts.length - 1;
+    }
+    
+    // Parse argument help string
+    const argPattern = /(<[^>]+>|\[[^\]]+\]|\([^)]+\))/g;
     const tokens = this.currentArgumentHelp.match(argPattern) || [];
     
-    // Build the complete usage line showing ALL arguments
+    // Build the usage line
     let usageLine = '  ';
     
-    // Add the command name in gray
-    usageLine += '\x1b[90m' + commandName + '\x1b[0m';
+    // Use concealed attribute to hide the command path and completed args
+    const concealedText = '\x1b[8m';
+    const resetColor = '\x1b[0m';
+    const grayColor = '\x1b[90m';
+    const boldWhite = '\x1b[1;97m';
     
-    // Track argument index (excluding | separators)
-    let argIndex = 0;
+    // Hide the command path
+    usageLine += concealedText + fullCommandPath + resetColor;
     
-    // Process all tokens (arguments and pipes)
+    // Process each token in the argument list
     for (let i = 0; i < tokens.length; i++) {
-      const token = tokens[i];
-      
-      if (token === '|') {
-        // This is an OR separator - add it without incrementing argIndex
-        usageLine += '\x1b[90m|\x1b[0m';
-        continue;
-      }
-      
       usageLine += ' '; // Space before each argument
       
-      // Check if this is the current argument
-      if (argIndex === currentArgIndex) {
-        // Currently typing this argument - make it bold
-        usageLine += '\x1b[1m\x1b[90m' + token + '\x1b[0m';
+      if (i < completedArgCount) {
+        // This argument position has been completed - hide the typed value
+        usageLine += concealedText + argumentParts[i] + resetColor;
       } else {
-        // All other arguments in regular gray
-        usageLine += '\x1b[90m' + token + '\x1b[0m';
+        // This argument position hasn't been completed - show the token
+        const token = tokens[i];
+        
+        if (i === currentArgIndex) {
+          // This is the current/active argument - make it bold and bright
+          usageLine += boldWhite + token + resetColor;
+        } else {
+          // Future arguments - show in gray
+          usageLine += grayColor + token + resetColor;
+        }
       }
-      
-      argIndex++;
     }
     
     this.writeEmitter.fire(usageLine + '\r\n');
     lineCount++;
     
-    // Show current argument details if available
-    if (currentArgIndex >= 0) {
-      const relevantTokens = tokens.filter(t => t !== '|');
-      if (currentArgIndex < relevantTokens.length) {
-        const currentArg = relevantTokens[currentArgIndex];
+    // Show hint for the current argument
+    let hintArgIndex = currentArgIndex;
+    
+    if (hintArgIndex >= 0 && hintArgIndex < tokens.length) {
+      const currentToken = tokens[hintArgIndex];
+      
+      if (currentToken) {
+        let hint = '';
         
-        if (currentArg) {
-          const argName = currentArg.replace(/[<>\[\]]/g, '');
-          let hint = '';
+        // Extract argument info and provide hint
+        if (currentToken.startsWith('(') && currentToken.endsWith(')')) {
+          // Choice list
+          hint = 'Choose one: ' + currentToken.slice(1, -1).replace(/\|/g, ', ');
+        } else {
+          // Regular argument - extract name
+          const argName = currentToken.replace(/[<>\[\]()]/g, '');
           
-          // Provide helpful hints based on argument name
+          // Provide context-aware hints
           if (argName.includes('player') || argName.includes('target')) {
             hint = 'Player name or @selector (@p, @a, @r, @e, @s)';
+          } else if (argName.includes('team')) {
+            hint = 'Team name or identifier';
+          } else if (argName.includes('key')) {
+            hint = 'Configuration key or setting name';
+          } else if (argName.includes('value')) {
+            hint = 'Value for the specified option';
           } else if (argName.includes('item')) {
             hint = 'Item ID (e.g., minecraft:diamond, stone, iron_sword)';
           } else if (argName.includes('block')) {
@@ -1289,27 +1323,38 @@ export class RconTerminal implements vscode.Pseudoterminal {
             hint = 'Game mode option';
           } else if (argName.includes('rule')) {
             hint = 'Game rule name';
-          } else if (argName.includes('value')) {
-            hint = 'Value for the specified option';
           } else if (argName === 'args' || argName === 'arguments') {
             hint = 'Additional arguments specific to this command';
           }
-          
-          if (hint) {
-            // Italicized hint text in gray
-            this.writeEmitter.fire('  \x1b[3m\x1b[90m' + hint + '\x1b[0m\r\n');
-            lineCount++;
-          }
+        }
+        
+        if (hint) {
+          // Italicized hint text in gray
+          this.writeEmitter.fire('  \x1b[3m' + grayColor + hint + resetColor + '\r\n');
+          lineCount++;
         }
       }
     }
     
-    this.suggestionListLines = lineCount - 1; // Don't count the initial move
+    this.suggestionListLines = lineCount - 1;
     
     // Restore cursor position
     this.writeEmitter.fire('\x1b8');
   }
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   private clearArgumentDisplay(): void {
     // This clears the display area (same as clearSuggestionDisplay)
     if (this.suggestionListLines > 0) {
@@ -1379,8 +1424,22 @@ export class RconTerminal implements vscode.Pseudoterminal {
         this.showPrompt();
       } else if (command === '/help') {
         this.showHelp();
-      } else if (command === '/reload-commands') {
-        this.initializeCommands();
+      } else if (command === '/reload-commands' || command === '/refresh-commands') {
+        this.initializeCommands(true); // Force refresh
+      } else if (command === '/clear-cache') {
+        this.autocomplete.clearCache();
+        this.writeEmitter.fire('\x1b[33mCommand cache cleared.\x1b[0m\r\n\r\n');
+        this.showPrompt();
+      } else if (command === '/cache-info') {
+        const info = this.autocomplete.getCacheInfo();
+        if (info.exists) {
+          this.writeEmitter.fire('\x1b[36mCache Status:\x1b[0m\r\n');
+          this.writeEmitter.fire('  Age: ' + info.age + '\r\n');
+          this.writeEmitter.fire('  Last updated: ' + info.lastUpdated?.toLocaleString() + '\r\n\r\n');
+        } else {
+          this.writeEmitter.fire('\x1b[33mNo cache found.\x1b[0m\r\n\r\n');
+        }
+        this.showPrompt();
       } else {
         // Add to history if not duplicate
         if (this.history.length === 0 || this.history[this.history.length - 1] !== command) {
@@ -1403,7 +1462,9 @@ export class RconTerminal implements vscode.Pseudoterminal {
     this.writeEmitter.fire('  \x1b[33m/clear\x1b[0m - Clear the terminal screen\r\n');
     this.writeEmitter.fire('  \x1b[33m/reconnect\x1b[0m - Reconnect to the server\r\n');
     this.writeEmitter.fire('  \x1b[33m/disconnect\x1b[0m - Disconnect from the server\r\n');
-    this.writeEmitter.fire('  \x1b[33m/reload-commands\x1b[0m - Reload command database\r\n');
+    this.writeEmitter.fire('  \x1b[33m/reload-commands\x1b[0m - Force reload command database from server\r\n');
+    this.writeEmitter.fire('  \x1b[33m/clear-cache\x1b[0m - Clear cached command database\r\n');
+    this.writeEmitter.fire('  \x1b[33m/cache-info\x1b[0m - Show command cache information\r\n');
     this.writeEmitter.fire('\r\n');
     this.writeEmitter.fire('\x1b[1;36mKeyboard Shortcuts:\x1b[0m\r\n');
     this.writeEmitter.fire('  \x1b[2mTab - Autocomplete commands and cycle suggestions\x1b[0m\r\n');
