@@ -1,56 +1,36 @@
-# Node modules
+# Dependencies
 node_modules/
-out/
-.vscode/
-.vscode-test/
-.gitignore
-.yarnrc
-vsc-extension-quickstart.md
-**/.vscode-test.*
-.vscodeignore
-
 
 # Build outputs
-dist/
 out/
+dist/
 *.vsix
+
+# VS Code specific
+.vscode/
+.vscode-test/
+.vscode-test.mjs
+vsc-extension-quickstart.md
+.vscodeignore
 
 # Environment variables
 .env
-.env.local
-.env.production
+.env.*
 
 # IDE files
-.vscode/settings.json
+*.code-workspace
 .idea/
-hekkit-server.code-workspace
-*.vsix
 
-# OS generated files
+# OS files
 .DS_Store
 Thumbs.db
 
 # Logs
 *.log
-logs/
+npm-debug.log*
 
-# Runtime data
-pids/
-*.pid
-*.seed
-
-# Coverage directory used by tools like istanbul
-coverage/
-
-# Dependency directories
-jspm_packages/
-
-# Optional npm cache directory
+# Optional npm cache
 .npm
 
-# Optional REPL history
-.node_repl_history
-
-# Temporary folders
-tmp/
-temp/
+# Testing
+coverage/
