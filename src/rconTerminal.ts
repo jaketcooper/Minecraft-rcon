@@ -145,15 +145,13 @@ export class RconTerminal implements vscode.Pseudoterminal {
         progressBar += '] ';
         progressBar += Math.round(progress) + '%\x1b[0m';
         
-        // Show current phase in gray (without showing command names)
+        // Show current phase in gray
         let phase = '';
         if (message.includes('Fetching')) {
           phase = ' Fetching commands...';
-        } else if (message.includes('Processing')) {
-          phase = ' Processing...';
-        } else if (message.includes('Building')) {
-          phase = ' Building index...';
-        } else if (message.includes('Complete')) {
+        } else if (message.includes('Loading')) {
+          phase = ' Processing subcommands...';
+        } else if (message.includes('Complete') || message.includes('loaded')) {
           phase = ' Complete!';
         }
         
@@ -161,16 +159,17 @@ export class RconTerminal implements vscode.Pseudoterminal {
         
         if (progress >= 100) {
           this.writeEmitter.fire('\r\n');
-          this.writeEmitter.fire('\x1b[32m✓ Commands loaded successfully!\x1b[0m\r\n\r\n');
+          this.writeEmitter.fire('\x1b[32m✓ Commands loaded and cached!\x1b[0m\r\n\r\n');
           this.showPrompt();
         }
-      });
+      }, forceRefresh);
     } catch (error) {
       this.writeEmitter.fire('\r\n\x1b[31m✗ Failed to load commands: ' + error + '\x1b[0m\r\n');
       this.writeEmitter.fire('\x1b[33mAutocomplete will be limited.\x1b[0m\r\n\r\n');
       this.showPrompt();
     }
   }
+
 
   close(): void {
     // Clear any pending reconnect timeouts
