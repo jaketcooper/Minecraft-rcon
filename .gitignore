@@ -1,5 +1,14 @@
 # Node modules
 node_modules/
+out/
+.vscode/
+.vscode-test/
+.gitignore
+.yarnrc
+vsc-extension-quickstart.md
+**/.vscode-test.*
+.vscodeignore
+
 
 # Build outputs
 dist/
@@ -14,7 +23,8 @@ out/
 # IDE files
 .vscode/settings.json
 .idea/
-*.workspace
+hekkit-server.code-workspace
+*.vsix
 
 # OS generated files
 .DS_Store
