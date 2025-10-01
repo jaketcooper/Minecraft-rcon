@@ -43,6 +43,7 @@ export class RconTerminal implements vscode.Pseudoterminal {
   private originalInput: string = '';
   private currentArgumentHelp: string = '';
   private previousCommand: string = '';
+  private currentCommandPath: string = '';  // NEW: Track the determined command path
   
   // Cache for full argument patterns per command
   private commandArgumentCache: Map<string, string> = new Map();
@@ -57,24 +58,38 @@ export class RconTerminal implements vscode.Pseudoterminal {
   private maxVisibleSuggestions: number = 10;
   private currentPage: number = 1;
   
+  // Extension context for caching
+  private context: vscode.ExtensionContext;
+  
   private get totalPages(): number {
     return Math.ceil(this.currentSuggestions.length / this.maxVisibleSuggestions);
   }
 
-  constructor(controller: RconController, host: string, port: number, password: string, output: vscode.OutputChannel) {
+  constructor(
+    controller: RconController, 
+    host: string, 
+    port: number, 
+    password: string, 
+    output: vscode.OutputChannel,
+    context: vscode.ExtensionContext
+  ) {
     this.controller = controller;
     this.host = host;
     this.port = port;
     this.password = password;
     this.output = output;
+    this.context = context;
     
-    // Initialize autocomplete
+    // Initialize autocomplete with all required parameters
     this.autocomplete = new CommandAutocomplete(
       async (cmd) => {
         const result = await this.controller.send(cmd);
         return result ?? '';
       },
-      output
+      output,
+      context,
+      host,
+      port
     );
   }
 
@@ -89,14 +104,33 @@ export class RconTerminal implements vscode.Pseudoterminal {
     // Initialize commands in background
     this.initializeCommands();
     
-    this.showPrompt();
   }
 
-  private async initializeCommands(): Promise<void> {
-    this.writeEmitter.fire('\r\n\x1b[33mLoading server commands...\x1b[0m\r\n');
+  private async initializeCommands(forceRefresh: boolean = false): Promise<void> {
+    const cacheInfo = this.autocomplete.getCacheInfo();
+    
+    // Determine if we'll be loading from cache
+    const willLoadFromCache = !forceRefresh && cacheInfo.exists;
+    
+    if (!willLoadFromCache) {
+      const reason = forceRefresh ? 'Forcing refresh...' : 
+                     !cacheInfo.exists ? 'No cache found...' : 
+                     'Cache outdated...';
+      this.writeEmitter.fire('\r\n\x1b[33mLoading server commands (' + reason + ')\x1b[0m\r\n');
+    }
     
     try {
       await this.autocomplete.initialize((progress, message) => {
+        // If loading from cache, just show the success message when complete
+        if (willLoadFromCache) {
+          if (progress >= 100) {
+            this.writeEmitter.fire('\r\n\x1b[32m✓ Commands loaded from cache!\x1b[0m\r\n\r\n');
+            this.showPrompt();
+          }
+          return; // Skip all progress bar rendering
+        }
+        
+        // Only show progress bar when NOT loading from cache
         // Clear previous line
         this.writeEmitter.fire('\r\x1b[K');
         
