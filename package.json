@@ -2,7 +2,7 @@
   "name": "minecraft-rcon",
   "displayName": "Minecraft RCON",
   "description": "A minimal RCON client for Minecraft servers inside VS Code",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "publisher": "jaketcooper",
   "repository": {
     "type": "git",
@@ -40,24 +40,24 @@
   },
   "contributes": {
     "commands": [
-    {
-      "command": "minecraftRcon.connect",
-      "title": "Minecraft RCON: Connect to Server",
-      "category": "Minecraft RCON",
-      "icon": "$(terminal)"
-    },
-    {
-      "command": "minecraftRcon.connectNew", 
-      "title": "Minecraft RCON: Connect with New Credentials",
-      "category": "Minecraft RCON",
-      "icon": "$(terminal)"
-    },
-    {
-      "command": "minecraftRcon.saveDefaults",
-      "title": "Minecraft RCON: Save Current Connection as Default",
-      "category": "Minecraft RCON",
-      "icon": "$(terminal)"
-    }
+      {
+        "command": "minecraftRcon.connect",
+        "title": "Minecraft RCON: Connect to Server",
+        "category": "Minecraft RCON",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "minecraftRcon.connectNew",
+        "title": "Minecraft RCON: Connect with New Credentials",
+        "category": "Minecraft RCON",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "minecraftRcon.saveDefaults",
+        "title": "Minecraft RCON: Save Current Connection as Default",
+        "category": "Minecraft RCON",
+        "icon": "$(terminal)"
+      }
     ],
     "terminal": {
       "profiles": [
@@ -85,7 +85,7 @@
           "default": "",
           "description": "Default RCON password (stored securely)"
         }
-    }
+      }
     }
   }
 }
