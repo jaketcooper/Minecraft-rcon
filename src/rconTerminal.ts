@@ -859,7 +859,7 @@ export class RconTerminal implements vscode.Pseudoterminal {
   }
 
   private showSuggestionList(): void {
-    if (!this.isShowingSuggestions || this.currentSuggestions.length === 0) return;
+    if (!this.isShowingSuggestions || this.currentSuggestions.length === 0) {return;}
     
     // Calculate the visible window based on the selected index
     this.updateVisibleWindow();
@@ -880,8 +880,25 @@ export class RconTerminal implements vscode.Pseudoterminal {
     
     let lineCount = 1;
     
+    // Get only the completed parts of the command (everything before the last space or the whole line if no space)
+    let completedText = '';
+    if (this.currentLine.includes(' ')) {
+      // If there's a space, get everything up to and including the last space
+      const lastSpaceIndex = this.currentLine.lastIndexOf(' ');
+      completedText = this.currentLine.substring(0, lastSpaceIndex + 1);
+    } else {
+      // No space yet, don't add any concealed text (list appears right after prompt)
+      completedText = '';
+    }
+    
+    const concealedText = '\x1b[8m'; // Concealed/hidden text
+    const resetColor = '\x1b[0m';
+    
     // Show indicator if there are items above the visible window
     if (this.visibleSuggestionsStart > 0) {
+      if (completedText) {
+        this.writeEmitter.fire(concealedText + completedText + resetColor);
+      }
       this.writeEmitter.fire('\x1b[90m  ▲ (' + this.visibleSuggestionsStart + ' more above)\x1b[0m\r\n');
       lineCount++;
     }
@@ -893,6 +910,11 @@ export class RconTerminal implements vscode.Pseudoterminal {
     );
     
     for (let i = this.visibleSuggestionsStart; i < visibleEnd; i++) {
+      // Add concealed text for alignment (only completed parts)
+      if (completedText) {
+        this.writeEmitter.fire(concealedText + completedText + resetColor);
+      }
+      
       // Show selection indicator and item
       if (i === this.suggestionIndex) {
         // Yellow for selected item with arrow indicator
@@ -907,11 +929,17 @@ export class RconTerminal implements vscode.Pseudoterminal {
     // Show indicator if there are items below the visible window
     if (visibleEnd < this.currentSuggestions.length) {
       const remaining = this.currentSuggestions.length - visibleEnd;
+      if (completedText) {
+        this.writeEmitter.fire(concealedText + completedText + resetColor);
+      }
       this.writeEmitter.fire('\x1b[90m  ▼ (' + remaining + ' more below)\x1b[0m\r\n');
       lineCount++;
     }
     
     // Show current position and page indicator at bottom
+    if (completedText) {
+      this.writeEmitter.fire(concealedText + completedText + resetColor);
+    }
     this.writeEmitter.fire('\x1b[90m  [' + (this.suggestionIndex + 1) + '/' + this.currentSuggestions.length + '] ');
     this.writeEmitter.fire('Page ' + this.currentPage + '/' + this.totalPages + '\x1b[0m');
     
