@@ -1,7 +1,7 @@
 {
   "name": "minecraft-rcon",
   "displayName": "Minecraft RCON",
-  "description": "A minimal RCON client for Minecraft servers inside VS Code (prototype)",
+  "description": "A minimal RCON client for Minecraft servers inside VS Code",
   "version": "1.0.1",
   "publisher": "jaketcooper",
   "repository": {
@@ -14,9 +14,7 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:minecraftRcon.connect"
-  ],
+  "activationEvents": [],
   "main": "./out/extension.js",
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -42,41 +40,52 @@
   },
   "contributes": {
     "commands": [
-      {
-        "command": "minecraftRcon.connect",
-        "title": "Minecraft RCON: Connect",
-        "icon": "$(plug)"
-      }
+    {
+      "command": "minecraftRcon.connect",
+      "title": "Minecraft RCON: Connect to Server",
+      "category": "Minecraft RCON",
+      "icon": "$(terminal)"
+    },
+    {
+      "command": "minecraftRcon.connectNew", 
+      "title": "Minecraft RCON: Connect with New Credentials",
+      "category": "Minecraft RCON",
+      "icon": "$(terminal)"
+    },
+    {
+      "command": "minecraftRcon.saveDefaults",
+      "title": "Minecraft RCON: Save Current Connection as Default",
+      "category": "Minecraft RCON",
+      "icon": "$(terminal)"
+    }
     ],
     "terminal": {
       "profiles": [
         {
           "id": "minecraftRcon.terminal",
-          "title": "Minecraft Server",
-          "icon": "server"
+          "title": "Minecraft Server"
         }
       ]
     },
     "configuration": {
-      "type": "object",
       "title": "Minecraft RCON",
       "properties": {
         "minecraftRcon.defaultHost": {
           "type": "string",
-          "default": "127.0.0.1",
-          "description": "Default RCON host"
+          "default": "",
+          "description": "Default RCON host address"
         },
         "minecraftRcon.defaultPort": {
           "type": "number",
-          "default": 25565,
+          "default": null,
           "description": "Default RCON port"
         },
         "minecraftRcon.defaultPassword": {
           "type": "string",
           "default": "",
-          "description": "Default RCON password"
+          "description": "Default RCON password (stored securely)"
         }
-      }
+    }
     }
   }
 }
