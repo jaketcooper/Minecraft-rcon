@@ -1,0 +1,55 @@
+# Files to exclude from the VS Code extension package
+# This reduces the extension size and excludes development files
+
+# Version control
+.git/**
+.gitignore
+
+# Development configurations
+.vscode/**
+.vscode-test/**
+.vscode-test.mjs
+eslint.config.mjs
+
+# Source files (TypeScript)
+src/**
+**/*.ts
+**/*.map
+!**/*.d.ts
+
+# Dependencies (bundled separately)
+node_modules/**
+
+# Build configurations
+tsconfig.json
+webpack.config.js
+
+# Documentation
+docs/**
+CONTRIBUTING.md
+MIGRATION.md
+*.md
+!README.md
+!CHANGELOG.md
+!LICENSE
+
+# Testing
+test/**
+coverage/**
+.nyc_output/**
+
+# Package files
+*.vsix
+package-lock.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+
+# Cache
+command-cache/**
+.npm/**
