@@ -21,8 +21,8 @@ export function activate(context: vscode.ExtensionContext) {
         
         // Add icon to the profile
         profile.options.iconPath = {
-          light: vscode.Uri.file(path.join(context.extensionPath, 'images', 'dark.png')),
-          dark: vscode.Uri.file(path.join(context.extensionPath, 'images', 'light.png'))
+          light: vscode.Uri.file(path.join(context.extensionPath, 'images', 'light.png')),
+          dark: vscode.Uri.file(path.join(context.extensionPath, 'images', 'dark.png'))
         };
         
         // Store the controller with the pty so we can track it later
