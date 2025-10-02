@@ -2,7 +2,7 @@
   "name": "minecraft-rcon",
   "displayName": "Minecraft RCON",
   "description": "A powerful RCON client for Minecraft servers with advanced fragmentation support",
-  "version": "2.0.6",
+  "version": "2.1.0",
   "icon": "images/icon.png",
   "license": "MIT",
   "publisher": "jaketcooper",
@@ -78,11 +78,6 @@
           "type": "number",
           "default": null,
           "description": "Default RCON port"
-        },
-        "minecraftRcon.defaultPassword": {
-          "type": "string",
-          "default": "",
-          "description": "Default RCON password (stored securely)"
         }
       }
     }
