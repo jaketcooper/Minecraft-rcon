@@ -263,7 +263,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📚 Documentation
 
 - [CHANGELOG.md](CHANGELOG.md) - Detailed version history
-- [MIGRATION.md](MIGRATION.md) - Upgrading from v1.x
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Development guide
 - [docs/TECHNICAL.md](docs/TECHNICAL.md) - Protocol implementation details
 
