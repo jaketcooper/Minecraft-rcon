@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2.0.1] - 2025-10-02
+## [2.0.5] - 2025-10-02
 
 ### Added
 - Add extension icon `images/icon.png`
@@ -311,8 +311,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ Forge/Fabric servers
 - ✅ Custom server software with RCON support
 
-[2.1.0]: https://github.com/jaketcooper/minecraft-rcon/compare/2.0.1...2.1.0
-[2.0.1]: https://github.com/jaketcooper/minecraft-rcon/compare/2.0.0...2.0.1
+[2.1.0]: https://github.com/jaketcooper/minecraft-rcon/compare/2.0.5...2.1.0
+[2.0.5]: https://github.com/jaketcooper/minecraft-rcon/compare/2.0.0...2.0.5
 [2.0.0]: https://github.com/jaketcooper/minecraft-rcon/compare/1.1.1...2.0.0
 [1.1.1]: https://github.com/jaketcooper/minecraft-rcon/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/jaketcooper/minecraft-rcon/compare/1.0.1...1.1.0
