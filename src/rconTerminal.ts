@@ -58,7 +58,12 @@ export class RconTerminal implements vscode.Pseudoterminal {
   private visibleSuggestionsStart: number = 0;
   private maxVisibleSuggestions: number = 10;
   private currentPage: number = 1;
-  
+
+  // For handling terminal resize
+  private lastCommandOutputLines: number = 0;
+  private needsClearBeforeSuggestions: boolean = false;
+  private terminalBufferHeight: number = 24;
+
   // Extension context for caching
   private context: vscode.ExtensionContext;
   
@@ -859,21 +864,39 @@ export class RconTerminal implements vscode.Pseudoterminal {
     this.showSuggestionList();
   }
 
+  // UPDATED: Better suggestion list rendering
   private showSuggestionList(): void {
     if (!this.isShowingSuggestions || this.currentSuggestions.length === 0) {return;}
     
     // Calculate the visible window based on the selected index
     this.updateVisibleWindow();
     
-    // Save cursor position
-    this.writeEmitter.fire('\x1b7');
-    
-    // Clear old list area
-    for (let i = 0; i < this.suggestionListLines; i++) {
-      this.writeEmitter.fire('\r\n\x1b[K');
+    // NEW: Handle large previous outputs by using absolute positioning
+    if (this.needsClearBeforeSuggestions) {
+      // Clear any residual rendering artifacts
+      this.writeEmitter.fire('\x1b[J'); // Clear from cursor to end of screen
+      this.needsClearBeforeSuggestions = false;
     }
+    
+    // Save cursor position - use more reliable method
+    this.writeEmitter.fire('\x1b7'); // Save cursor
+    
+    // Clear old list area first if it exists
     if (this.suggestionListLines > 0) {
-      this.writeEmitter.fire(`\x1b[${this.suggestionListLines}A`);
+      // Move to the start of the suggestion area
+      this.writeEmitter.fire('\r\n');
+      for (let i = 0; i < this.suggestionListLines; i++) {
+        this.writeEmitter.fire('\x1b[2K'); // Clear entire line
+        if (i < this.suggestionListLines - 1) {
+          this.writeEmitter.fire('\r\n');
+        }
+      }
+      // Move back up
+      if (this.suggestionListLines > 0) {
+        this.writeEmitter.fire(`\x1b[${this.suggestionListLines}A`);
+      }
+      // Move back to saved position
+      this.writeEmitter.fire('\r');
     }
     
     // Move to next line for list
@@ -897,6 +920,7 @@ export class RconTerminal implements vscode.Pseudoterminal {
     
     // Show indicator if there are items above the visible window
     if (this.visibleSuggestionsStart > 0) {
+      this.writeEmitter.fire('\x1b[2K'); // Clear line first
       if (completedText) {
         this.writeEmitter.fire(concealedText + completedText + resetColor);
       }
@@ -911,6 +935,8 @@ export class RconTerminal implements vscode.Pseudoterminal {
     );
     
     for (let i = this.visibleSuggestionsStart; i < visibleEnd; i++) {
+      this.writeEmitter.fire('\x1b[2K'); // Clear line first
+      
       // Add concealed text for alignment (only completed parts)
       if (completedText) {
         this.writeEmitter.fire(concealedText + completedText + resetColor);
@@ -930,6 +956,7 @@ export class RconTerminal implements vscode.Pseudoterminal {
     // Show indicator if there are items below the visible window
     if (visibleEnd < this.currentSuggestions.length) {
       const remaining = this.currentSuggestions.length - visibleEnd;
+      this.writeEmitter.fire('\x1b[2K'); // Clear line first
       if (completedText) {
         this.writeEmitter.fire(concealedText + completedText + resetColor);
       }
@@ -938,6 +965,7 @@ export class RconTerminal implements vscode.Pseudoterminal {
     }
     
     // Show current position and page indicator at bottom
+    this.writeEmitter.fire('\x1b[2K'); // Clear line first
     if (completedText) {
       this.writeEmitter.fire(concealedText + completedText + resetColor);
     }
@@ -995,18 +1023,26 @@ export class RconTerminal implements vscode.Pseudoterminal {
     );
   }
 
+  // UPDATED: Better clearing of suggestion display
   private clearSuggestionDisplay(): void {
     // Clear the suggestion list area
     if (this.suggestionListLines > 0) {
       this.writeEmitter.fire('\x1b7'); // Save cursor
-      this.writeEmitter.fire('\r\n');
+      this.writeEmitter.fire('\r\n'); // Move to suggestion area
+      
+      // Clear each line properly
       for (let i = 0; i < this.suggestionListLines; i++) {
-        this.writeEmitter.fire('\x1b[K');
+        this.writeEmitter.fire('\x1b[2K'); // Clear entire line
         if (i < this.suggestionListLines - 1) {
           this.writeEmitter.fire('\r\n');
         }
       }
-      this.writeEmitter.fire(`\x1b[${this.suggestionListLines}A`);
+      
+      // Move back to original position
+      if (this.suggestionListLines > 0) {
+        this.writeEmitter.fire(`\x1b[${this.suggestionListLines}A`);
+      }
+      
       this.writeEmitter.fire('\x1b8'); // Restore cursor
       this.suggestionListLines = 0;
     }
@@ -1108,7 +1144,18 @@ export class RconTerminal implements vscode.Pseudoterminal {
     // Don't clear currentArgumentHelp or commandArgumentCache here - preserve it for the command
   }
 
+  // UPDATED: Clear the input line when typing starts
   private insertText(text: string): void {
+    // NEW: Clear any rendering artifacts when starting to type after large output
+    if (this.lastCommandOutputLines > 10) {
+      // Ensure we're on a clean line
+      this.writeEmitter.fire('\x1b[2K'); // Clear current line
+      this.writeEmitter.fire('\r'); // Return to start
+      this.showPrompt();
+      this.writeEmitter.fire(this.currentLine.substring(0, this.cursorPosition));
+      this.lastCommandOutputLines = 0; // Reset
+    }
+    
     // Replace selection if exists
     if (this.hasSelection()) {
       this.deleteSelection();
@@ -1173,31 +1220,31 @@ export class RconTerminal implements vscode.Pseudoterminal {
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-private showArgumentsInList(): void {
+  // UPDATED: Better argument display rendering
+  private showArgumentsInList(): void {
     if (!this.currentArgumentHelp) {return;}
+    
+    // NEW: Handle large previous outputs
+    if (this.needsClearBeforeSuggestions) {
+      this.writeEmitter.fire('\x1b[J'); // Clear from cursor to end
+      this.needsClearBeforeSuggestions = false;
+    }
     
     // Save cursor position
     this.writeEmitter.fire('\x1b7');
     
     // Clear old list area
-    for (let i = 0; i < this.suggestionListLines; i++) {
-      this.writeEmitter.fire('\r\n\x1b[K');
-    }
     if (this.suggestionListLines > 0) {
-      this.writeEmitter.fire(`\x1b[${this.suggestionListLines}A`);
+      this.writeEmitter.fire('\r\n');
+      for (let i = 0; i < this.suggestionListLines; i++) {
+        this.writeEmitter.fire('\x1b[2K'); // Clear entire line
+        if (i < this.suggestionListLines - 1) {
+          this.writeEmitter.fire('\r\n');
+        }
+      }
+      if (this.suggestionListLines > 0) {
+        this.writeEmitter.fire(`\x1b[${this.suggestionListLines}A`);
+      }
     }
     
     // Move to next line for argument display
@@ -1205,7 +1252,7 @@ private showArgumentsInList(): void {
     
     let lineCount = 1;
     
-    // Use the command path from getSuggestions - no more parsing needed!
+    // Use the command path from getSuggestions
     const fullCommandPath = this.currentCommandPath || this.currentLine.split(' ')[0] || '/';
     
     // Parse the current input to determine argument position
@@ -1255,6 +1302,9 @@ private showArgumentsInList(): void {
     const grayColor = '\x1b[90m';
     const boldWhite = '\x1b[1;97m';
     
+    // Clear the line first
+    this.writeEmitter.fire('\x1b[2K');
+    
     // Hide the command path
     usageLine += concealedText + fullCommandPath + resetColor;
     
@@ -1299,7 +1349,7 @@ private showArgumentsInList(): void {
           // Regular argument - extract name
           const argName = currentToken.replace(/[<>\[\]()]/g, '');
           
-          // Provide context-aware hints
+          // Provide context-aware hints (keeping existing hint logic)
           if (argName.includes('player') || argName.includes('target')) {
             hint = 'Player name or @selector (@p, @a, @r, @e, @s)';
           } else if (argName.includes('team')) {
@@ -1329,8 +1379,9 @@ private showArgumentsInList(): void {
           }
         }
         
-        if (hint) {
-          // Italicized hint text in gray
+       if (hint) {
+          // Clear line and show italicized hint text in gray
+          this.writeEmitter.fire('\x1b[2K');
           this.writeEmitter.fire('  \x1b[3m' + grayColor + hint + resetColor + '\r\n');
           lineCount++;
         }
@@ -1342,19 +1393,6 @@ private showArgumentsInList(): void {
     // Restore cursor position
     this.writeEmitter.fire('\x1b8');
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   private clearArgumentDisplay(): void {
     // This clears the display area (same as clearSuggestionDisplay)
@@ -1705,6 +1743,8 @@ private showArgumentsInList(): void {
     }
   }
 
+
+  // UPDATED: Track output in executeCommand method
   private async executeCommand(command: string): Promise<void> {
     if (this.isReconnecting) {
       this.writeEmitter.fire('\x1b[33mReconnecting... Please wait.\x1b[0m\r\n\r\n');
@@ -1719,6 +1759,9 @@ private showArgumentsInList(): void {
     }
 
     this.isExecutingCommand = true;
+    
+    // NEW: Track output lines for rendering management
+    let outputLineCount = 0;
 
     try {
       const response = await this.controller.send(command);
@@ -1727,16 +1770,22 @@ private showArgumentsInList(): void {
         // Apply Minecraft color codes
         const formatted = CommandAutocomplete.formatMinecraftColors(response);
         const lines = formatted.split('\n');
+        outputLineCount = lines.length;
+        
         lines.forEach(line => {
           this.writeEmitter.fire(`${line}\r\n`);
         });
       } else {
         this.writeEmitter.fire('\x1b[2m(no response)\x1b[0m\r\n');
+        outputLineCount = 1;
       }
       
       this.writeEmitter.fire('\r\n');
+      outputLineCount++; // For the extra newline
+      
     } catch (err: any) {
       this.writeEmitter.fire(`\x1b[31mError: ${err.message || err}\x1b[0m\r\n`);
+      outputLineCount = 1;
       
       const errorMsg = String(err.message || err).toLowerCase();
       if (errorMsg.includes('econnreset') || 
@@ -1751,7 +1800,8 @@ private showArgumentsInList(): void {
         this.reconnectAttempts = 0;
         this.reconnectDelay = 2000;
         
-        this.writeEmitter.fire('\x1b[33m⚠ Connection lost. Auto-reconnecting...\x1b[0m\r\n');
+        this.writeEmitter.fire('\x1b[33m⚠  Connection lost. Auto-reconnecting...\x1b[0m\r\n');
+        outputLineCount++;
         
         // Clear any existing timeout
         if (this.reconnectTimeout) {
@@ -1764,8 +1814,15 @@ private showArgumentsInList(): void {
         }, 1000);
       } else {
         this.writeEmitter.fire('\r\n');
+        outputLineCount++;
       }
     } finally {
+      // NEW: Store output lines and set flag if output was large
+      this.lastCommandOutputLines = outputLineCount;
+      if (outputLineCount > 10) {
+        this.needsClearBeforeSuggestions = true;
+      }
+      
       this.isExecutingCommand = false;
       this.showPrompt();
     }
