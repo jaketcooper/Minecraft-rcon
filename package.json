@@ -3,6 +3,7 @@
   "displayName": "Minecraft RCON",
   "description": "A powerful RCON client for Minecraft servers with advanced fragmentation support",
   "version": "2.0.0",
+  "icon": "images/icon.png", 
   "license": "MIT",
   "publisher": "jaketcooper",
   "repository": {
