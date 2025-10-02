@@ -1,3 +1,4 @@
+// src/extension.ts
 import * as vscode from 'vscode';
 import { RconController } from './rconClient';
 import { RconTerminal } from './rconTerminal';

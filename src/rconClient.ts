@@ -1,11 +1,12 @@
-import { Rcon } from 'rcon-client';
+// src/rconClient.ts
+import { RconProtocol } from './rconProtocol';
 import * as vscode from 'vscode';
 
 export class RconController {
   private host: string;
   private port: number;
   private password: string;
-  private client: Rcon | null = null;
+  private client: RconProtocol | null = null;
   private output: vscode.OutputChannel;
 
   constructor(host: string, port: number, password: string, output: vscode.OutputChannel) {
@@ -16,13 +17,21 @@ export class RconController {
   }
 
   public async connect(): Promise<void> {
-    this.client = new Rcon({ host: this.host, port: this.port, password: this.password });
+    this.client = new RconProtocol(this.host, this.port, this.password, this.output);
+    
+    // Set up error handler
+    this.client.on('error', (error: Error) => {
+      this.output.appendLine(`RCON error: ${error.message}`);
+    });
+    
+    // Set up close handler
+    this.client.on('close', () => {
+      this.output.appendLine('RCON connection closed');
+      this.client = null;
+    });
+    
     await this.client.connect();
-
-    // Hook simple event logging if available
-    if (this.client) {
-      this.output.appendLine('RCON session established.');
-    }
+    this.output.appendLine('RCON session established.');
   }
 
   public async send(cmd: string): Promise<string | undefined> {
@@ -39,7 +48,7 @@ export class RconController {
   public async disconnect(): Promise<void> {
     if (!this.client) { return; }
     try {
-      await this.client.end();
+      await this.client.disconnect();
     } catch (e) {
       // ignore
     }
@@ -47,6 +56,6 @@ export class RconController {
   }
 
   public isConnected(): boolean {
-    return this.client !== null;
+    return this.client !== null && this.client.isConnected();
   }
 }

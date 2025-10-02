@@ -1,3 +1,4 @@
+// src/rconTerminal.ts
 import * as vscode from 'vscode';
 import { RconController } from './rconClient';
 import { CommandAutocomplete } from './commandAutocomplete';
