@@ -1,3 +1,7 @@
+## 🔒 Security Update (<2.1.0)
+**If you used versions prior to v2.1.0:** Your password is now automatically migrated to 
+secure storage. The old plaintext password is removed from settings.json. 
+
 # Minecraft RCON Terminal - Never Alt-Tab Again
 
 ![Version](https://img.shields.io/badge/version-2.0.0-blue)
@@ -149,7 +153,6 @@ Configure default settings in VS Code (`File` → `Preferences` → `Settings` �
   // Default connection settings
   "minecraftRcon.defaultHost": "localhost",
   "minecraftRcon.defaultPort": 25575,
-  "minecraftRcon.defaultPassword": "your-password"
 }
 ```
 
