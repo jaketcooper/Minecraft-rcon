@@ -311,11 +311,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ Forge/Fabric servers
 - ✅ Custom server software with RCON support
 
-[2.1.0]: https://github.com/jaketcooper/minecraft-rcon/compare/v2.0.1...v2.1.0
-[2.0.1]: https://github.com/jaketcooper/minecraft-rcon/compare/v2.0.0...v2.0.1
-[2.0.0]: https://github.com/jaketcooper/minecraft-rcon/compare/v1.1.1...v2.0.0
-[1.1.1]: https://github.com/jaketcooper/minecraft-rcon/compare/v1.1.0...v1.1.1
-[1.1.0]: https://github.com/jaketcooper/minecraft-rcon/compare/v1.0.1...v1.1.0
-[1.0.1]: https://github.com/jaketcooper/minecraft-rcon/compare/v1.0.0...v1.0.1
-[1.0.0]: https://github.com/jaketcooper/minecraft-rcon/compare/v0.1.0...v1.0.0
-[0.1.0]: https://github.com/jaketcooper/minecraft-rcon/releases/tag/v0.1.0
+[2.1.0]: https://github.com/jaketcooper/minecraft-rcon/compare/2.0.1...2.1.0
+[2.0.1]: https://github.com/jaketcooper/minecraft-rcon/compare/2.0.0...2.0.1
+[2.0.0]: https://github.com/jaketcooper/minecraft-rcon/compare/1.1.1...2.0.0
+[1.1.1]: https://github.com/jaketcooper/minecraft-rcon/compare/1.1.0...1.1.1
+[1.1.0]: https://github.com/jaketcooper/minecraft-rcon/compare/1.0.1...1.1.0
+[1.0.1]: https://github.com/jaketcooper/minecraft-rcon/compare/1.0.0...1.0.1
+[1.0.0]: https://github.com/jaketcooper/minecraft-rcon/compare/0.1.0...1.0.0
+[0.1.0]: https://github.com/jaketcooper/minecraft-rcon/releases/tag/0.1.0
