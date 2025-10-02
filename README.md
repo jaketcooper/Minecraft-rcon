@@ -1,48 +1,53 @@
 # Minecraft RCON Terminal for VS Code
 
-A powerful VS Code extension that provides a fully-featured terminal interface for managing Minecraft servers via RCON (Remote Console) protocol. Features intelligent command autocomplete, Minecraft formatting support, and a rich terminal experience.
+![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![VS Code](https://img.shields.io/badge/VS%20Code-^1.95.0-green)
+![License](https://img.shields.io/badge/license-MIT-brightgreen)
+
+A powerful VS Code extension that provides a fully-featured terminal interface for managing Minecraft servers via RCON (Remote Console) protocol. Features intelligent command autocomplete, full fragmentation support, Minecraft formatting, and a rich terminal experience.
 
 ![demo-gif](images/demo-autocomplete.gif)
 
-## ✨ Features
+## ✨ What's New in v2.0
+
+### 🎉 No More Truncated Commands!
+- **BEFORE:** `/help` cut off at ~150 commands
+- **AFTER:** `/help` shows ALL 300+ commands properly
+- Custom RCON protocol implementation with full fragmentation support
+- Commands like `/status`, `/cvarlist` return complete data
+
+## 🚀 Features
 
 ### 🎮 Smart Command Autocomplete
 - **Intelligent suggestions** - Real-time command completion as you type
 - **Tab completion** - Minecraft-style tab cycling through suggestions
 - **Argument hints** - Context-aware help showing required and optional arguments
-- **Search support** - Deep navigation through command trees
-- **Command caching** - Fast autocomplete after initial load
+- **Deep command trees** - Full support for subcommands and complex parameters
+- **Hyphenated commands** - Commands like `/titanium-rewards` work perfectly
+- **Command caching** - Lightning-fast autocomplete after initial load
+- **Fallback system** - Common commands available even if server help fails
 
 ### 🖥️ Rich Terminal Experience
-- **Minecraft color codes** - Full support for all Minecraft formatting codes (§0-§f, §d, §c, etc.)
+- **Minecraft color codes** - Full support for all formatting codes (§0-§f, §l, §o, etc.)
 - **Command history** - Navigate through previous commands with Up/Down arrows
 - **Text selection** - Select, copy, cut, and paste with standard keyboard shortcuts
-- **Multi-line output** - Properly formatted server responses
+- **Multi-line output** - Properly formatted server responses of any size
+- **Clean rendering** - No artifacts or corruption, even after 1000+ line outputs
 - **Connection status** - Visual indicators for connection state
 
 ### 🔄 Robust Connection Management
 - **Auto-reconnection** - Automatic reconnection with exponential backoff
-- **Manual reconnect** - `/reconnect` command for manual connection control
+- **Save credentials** - Store your favorite server connections
+- **Multiple connections** - Open multiple RCON terminals simultaneously
 - **Connection persistence** - Maintains connection across VS Code restarts
 - **Error recovery** - Graceful handling of network issues
 
-### ⌨️ Keyboard Shortcuts
-| Shortcut | Action |
-|----------|--------|
-| `Tab` | Autocomplete/cycle suggestions |
-| `Shift+Tab` | Reverse cycle suggestions |
-| `↑/↓` | Navigate command history or suggestions |
-| `Home/End` | Jump to first/last suggestion |
-| `Page Up/Down` | Navigate suggestion pages |
-| `Ctrl+L` | Clear screen |
-| `Ctrl+C` | Copy selection or cancel input |
-| `Ctrl+V` | Paste |
-| `Ctrl+A` | Select all |
-| `Ctrl+←/→` | Jump word left/right |
-| `Ctrl+W` | Delete word backward |
-| `Ctrl+U` | Clear line |
-| `Ctrl+D` | Disconnect |
-| `Esc` | Cancel autocomplete or clear line |
+### 💪 Protocol Features (v2.0)
+- **Full fragmentation support** - Handles responses of unlimited size
+- **Concurrent commands** - Send multiple commands without waiting
+- **Robust parsing** - Works with vanilla, Spigot, Paper, Forge, and Fabric servers
+- **UTF-8 support** - Proper handling of special characters and color codes
+- **Debug logging** - Detailed diagnostics in output channel
 
 ## 📦 Installation
 
@@ -60,14 +65,6 @@ A powerful VS Code extension that provides a fully-featured terminal interface f
 
 ## 🚀 Getting Started
 
-### Quick Connect
-1. Press `Ctrl+Shift+P` to open Command Palette
-2. Type "Minecraft RCON" and select "Connect to Minecraft RCON"
-3. Enter connection details:
-   - **Host**: Your server IP (default: `localhost`)
-   - **Port**: RCON port (default: `25575`)
-   - **Password**: Your RCON password
-
 ### Enable RCON on Your Server
 Add these lines to your `server.properties`:
 ```properties
@@ -76,48 +73,79 @@ rcon.port=25575
 rcon.password=your-secure-password
 ```
 
+### Connect to Your Server
+
+#### Quick Connect (uses saved defaults if available)
+1. Press `Ctrl+Shift+P`
+2. Run "Minecraft RCON: Connect to Server"
+3. Enter credentials if not saved
+
+#### Connect with New Credentials
+1. Press `Ctrl+Shift+P`
+2. Run "Minecraft RCON: Connect with New Credentials"
+3. Enter host, port, and password
+
+#### Save Connection as Default
+1. Connect to a server
+2. Press `Ctrl+Shift+P`
+3. Run "Minecraft RCON: Save Current Connection as Default"
+
+## ⌨️ Keyboard Shortcuts
+
+### Command Navigation
+| Shortcut | Action |
+|----------|--------|
+| `Tab` | Autocomplete command/cycle suggestions |
+| `Shift+Tab` | Reverse cycle through suggestions |
+| `↑/↓` | Navigate command history or suggestions |
+| `Home/End` | Jump to first/last suggestion |
+| `Page Up/Down` | Navigate suggestion pages |
+| `Esc` | Cancel autocomplete or clear line |
+
+### Text Editing
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+A` | Select all |
+| `Ctrl+C` | Copy selection or cancel input |
+| `Ctrl+V` | Paste |
+| `Ctrl+X` | Cut selection |
+| `Ctrl+←/→` | Jump word left/right |
+| `Ctrl+Shift+←/→` | Select word left/right |
+| `Shift+Home/End` | Select to start/end of line |
+
+### Terminal Control
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+L` | Clear screen |
+| `Ctrl+W` | Delete word backward |
+| `Ctrl+U` | Clear entire line |
+| `Ctrl+K` | Delete from cursor to end |
+| `Ctrl+D` | Disconnect from server |
+
 ## 📋 Built-in Commands
 
 | Command | Description |
 |---------|-------------|
-| `/help` | Show built-in commands help |
+| `/help` | Show Minecraft commands (now shows ALL commands!) |
 | `/clear` | Clear terminal screen |
 | `/reconnect` | Manually reconnect to server |
 | `/disconnect` | Disconnect from server |
-| `/reload-commands` | Reload command database |
+| `/reload-commands` | Force reload command database from server |
+| `/clear-cache` | Clear cached command database |
+| `/cache-info` | Show command cache information |
 
 ## ⚙️ Configuration
 
-### Extension Settings
-Configure in VS Code settings (`Ctrl+,`):
+Configure default settings in VS Code (`File` → `Preferences` → `Settings` → Search "Minecraft RCON"):
 
 ```json
 {
   // Default connection settings
   "minecraftRcon.defaultHost": "localhost",
   "minecraftRcon.defaultPort": 25575,
-  
-  // Terminal behavior
-  "minecraftRcon.autoReconnect": true,
-  "minecraftRcon.reconnectDelay": 2000,
-  "minecraftRcon.maxReconnectAttempts": 5,
-  
-  // Display settings
-  "minecraftRcon.maxSuggestionsVisible": 10,
-  "minecraftRcon.historyLimit": 100,
-  
-  // Command loading
-  "minecraftRcon.autoLoadCommands": true,
-  "minecraftRcon.commandCacheTimeout": 3600000
+  "minecraftRcon.defaultPassword": "your-password"
 }
 ```
-
-### Saved Connections
-Save frequently used servers for quick access:
-
-1. Press `Ctrl+Shift+P`
-2. Run "Minecraft RCON: Manage Saved Connections"
-3. Add, edit, or remove saved servers
 
 ## 🎯 Usage Examples
 
@@ -127,6 +155,7 @@ Save frequently used servers for quick access:
 /give @a diamond 64
 /tp @p ~ ~10 ~
 /weather clear 1000
+/help  # Now shows ALL commands!
 ```
 
 ### Using Autocomplete
@@ -137,11 +166,19 @@ Save frequently used servers for quick access:
 
 ### Command Arguments
 When typing commands, you'll see helpful hints:
-- `<required>` - Required arguments
-- `[optional]` - Optional arguments
+- `<required>` - Required arguments in angle brackets
+- `[optional]` - Optional arguments in square brackets
+- `(choice1|choice2)` - Multiple options separated by pipes
 - `@selectors` - Target selectors (@p, @a, @r, @e, @s)
 
 ## 🔧 Troubleshooting
+
+### After Updating to v2.0
+If upgrading from v1.x, run these commands:
+```
+/clear-cache
+/reload-commands
+```
 
 ### Connection Issues
 - **"Connection refused"** - Check if RCON is enabled in server.properties
@@ -149,40 +186,40 @@ When typing commands, you'll see helpful hints:
 - **"Timeout"** - Check firewall settings and ensure port is open
 
 ### Autocomplete Not Working
-1. Check the output panel for errors (`View → Output → Minecraft RCON`)
-2. Try `/reload-commands` to refresh the command database
-3. Ensure you have permission to run `/help` on the server
+1. Clear cache: `/clear-cache`
+2. Reload: `/reload-commands`
+3. Check output panel: `View → Output → Minecraft RCON`
+4. Ensure you have permission to run `/help` on the server
 
-### Color Codes Not Displaying
-- Ensure your terminal supports ANSI color codes
-- Check VS Code terminal color settings
+### Large Command Output Issues (Fixed in v2.0!)
+- `/help` now returns complete list
+- `/status` shows all players
+- `/scoreboard` displays everything
+- No more truncation at 4096 bytes!
+
+### Visual Issues
+- Terminal rendering has been completely fixed in v2.0
+- No more duplicate suggestion lists
+- No more corrupted displays after large outputs
+- If you see any artifacts, use `/clear` to reset
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit pull requests or create issues for bugs and feature requests.
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup.
 
-### Development Setup
+### Development
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/minecraft-rcon.git
+# Clone repository
+git clone https://github.com/jaketcooper/minecraft-rcon.git
 
 # Install dependencies
 npm install
 
 # Compile and watch
-npm run watch
+npm run compile
 
 # Run tests
 npm test
-```
-
-### Building from Source
-```bash
-# Build the extension
-npm run compile
-
-# Package as VSIX
-npm run package
 ```
 
 ## 📄 License
@@ -191,26 +228,54 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Built with the [rcon-client](https://github.com/janispritzkau/rcon-client/) library
-- Inspired by the Minecraft community's need for better server management tools
-- Thanks to all contributors and testers
+- Minecraft community for feedback and testing
+- Contributors who helped identify and fix the fragmentation issue
+- VS Code extension developers community
 
 ## 📊 Version History
 
-### v1.0.0 (Latest)
-- Initial release
-- Full command autocomplete system
-- Minecraft color code support
-- Connection management
-- Command history
+### v2.0.0 (Latest) - The Fragmentation Fix Update
+- **Custom RCON protocol** replacing limited rcon-client library
+- **Full fragmentation support** - no more truncated responses!
+- **Hyphenated command fix** - all command types now work
+- **Terminal rendering fixes** - clean display even after huge outputs
+- **Fallback commands** - autocomplete works even if help fails
+- **Better error handling** - improved connection stability
+- See [CHANGELOG.md](CHANGELOG.md) for full details
+
+### v1.1.1
+- VS Code compatibility updates
+- Repository cleanup
+
+### v1.1.0
+- Initial autocomplete system
+- Suggestion rendering
+- Command caching
+
+### v1.0.0
+- Full terminal interface
+- Minecraft color support
 - Keyboard shortcuts
+
+## 🐛 Known Issues
+
+- None! The v2.0 update fixed all major issues
+
+## 📚 Documentation
+
+- [CHANGELOG.md](CHANGELOG.md) - Detailed version history
+- [MIGRATION.md](MIGRATION.md) - Upgrading from v1.x
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Development guide
+- [docs/TECHNICAL.md](docs/TECHNICAL.md) - Protocol implementation details
 
 ## 💬 Support
 
 - **Issues**: [GitHub Issues](https://github.com/jaketcooper/Minecraft-rcon/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/jaketcooper/Minecraft-rcon/discussions)
-- **Discord**: [Join our Discord](https://discord.gg/un1t)
+- **Latest Release**: [v2.0.0](https://github.com/jaketcooper/Minecraft-rcon/releases/latest)
 
 ---
 
 Made with ❤️ for the Minecraft community
+
+**Now with 100% less truncation!** 🎉

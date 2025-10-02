@@ -1,8 +1,9 @@
 {
   "name": "minecraft-rcon",
   "displayName": "Minecraft RCON",
-  "description": "A minimal RCON client for Minecraft servers inside VS Code",
-  "version": "1.1.1",
+  "description": "A powerful RCON client for Minecraft servers with advanced fragmentation support",
+  "version": "2.0.0",
+  "license": "MIT",
   "publisher": "jaketcooper",
   "repository": {
     "type": "git",
@@ -34,9 +35,6 @@
     "typescript": "^5.9.2",
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2"
-  },
-  "dependencies": {
-    "rcon-client": "^4.2.5"
   },
   "contributes": {
     "commands": [
