@@ -1,10 +1,23 @@
-# Minecraft RCON Terminal for VS Code
+# Minecraft RCON Terminal - Never Alt-Tab Again
 
 ![Version](https://img.shields.io/badge/version-2.0.0-blue)
 ![VS Code](https://img.shields.io/badge/VS%20Code-^1.95.0-green)
 ![License](https://img.shields.io/badge/license-MIT-brightgreen)
 
-A powerful VS Code extension that provides a fully-featured terminal interface for managing Minecraft servers via RCON (Remote Console) protocol. Features intelligent command autocomplete, full fragmentation support, Minecraft formatting, and a rich terminal experience.
+## 🎮 The Problem
+Running a Minecraft server means constantly switching between:
+- Fullscreen Minecraft client (for testing)
+- Server console (no autocomplete, no history)
+- Config editors (separate windows)
+- Documentation (wikis, guides)
+
+## ✨ The Solution
+Manage EVERYTHING from VS Code:
+- Full command autocomplete (better than vanilla!)
+- Edit configs and run commands side-by-side
+- Persistent command history
+- Use VS Code AI to analyze server output
+- Never leave your development environment
 
 ![demo-gif](images/demo-autocomplete.gif)
 
@@ -41,13 +54,6 @@ A powerful VS Code extension that provides a fully-featured terminal interface f
 - **Multiple connections** - Open multiple RCON terminals simultaneously
 - **Connection persistence** - Maintains connection across VS Code restarts
 - **Error recovery** - Graceful handling of network issues
-
-### 💪 Protocol Features (v2.0)
-- **Full fragmentation support** - Handles responses of unlimited size
-- **Concurrent commands** - Send multiple commands without waiting
-- **Robust parsing** - Works with vanilla, Spigot, Paper, Forge, and Fabric servers
-- **UTF-8 support** - Proper handling of special characters and color codes
-- **Debug logging** - Detailed diagnostics in output channel
 
 ## 📦 Installation
 
