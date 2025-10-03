@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.2.0] - 2025-10-03
+
+### 🐛 Fixed
+- `rconTerminal.ts` use TCP keepalive and increase command response timeout
+- `commandAutocomplete.ts` improve parsing of optional subcommands and arguments in autocomplete
+
+---
+
 ## [2.1.0] - 2025-10-02
 
 ### ⚠️ Security Update
