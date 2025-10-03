@@ -232,10 +232,18 @@ export class CommandAutocomplete {
       // Also remove inner angle brackets if present
       if (name.startsWith('<') && name.endsWith('>')) {
         name = name.slice(1, -1); // Remove < and >
-      }
+        return {
+          type: ParameterType.ARGUMENT,
+          name,
+          optional: true,
+          position
+        };
+      }  
+      // For [literal] without angle brackets, this could be an optional subcommand
+      // Return as LITERAL but we'll handle it specially in loadCommandDetails
       return {
-        type: ParameterType.ARGUMENT,
-        name,
+        type: ParameterType.LITERAL,
+        literal: name,  // Store WITHOUT the brackets
         optional: true,
         position
       };
@@ -531,13 +539,36 @@ export class CommandAutocomplete {
               
               if (tokens.length > 0) {
                 const firstToken = tokens[0];
-                
+
                 // Determine if first token is a literal/subcommand or an argument
-                const isArgument = firstToken.startsWith('<') || firstToken.startsWith('[') || firstToken.startsWith('(');
+                // FIXED: Better detection for optional subcommands vs optional arguments
+                let isArgument = false;
+                if (firstToken.startsWith('<')) {
+                  // <arg> - required argument
+                  isArgument = true;
+                } else if (firstToken.startsWith('[') && firstToken.endsWith(']')) {
+                  // Could be [<arg>] or [subcommand]
+                  const inner = firstToken.slice(1, -1);
+                  if (inner.startsWith('<') && inner.endsWith('>')) {
+                    // [<arg>] - optional argument
+                    isArgument = true;
+                  } else {
+                    // [subcommand] - optional subcommand, treat as subcommand
+                    isArgument = false;
+                  }
+                } else if (firstToken.startsWith('(') && firstToken.endsWith(')')) {
+                  // (choice1|choice2) - choice list, treat as argument
+                  isArgument = true;
+                }
                 
                 if (!isArgument) {
-                  // First token is a literal - this is a subcommand variant
-                  const subcommandName = firstToken;
+                  // First token is a literal/subcommand - this is a subcommand variant
+                  let subcommandName = firstToken;
+                  
+                  // Strip optional brackets if present
+                  if (subcommandName.startsWith('[') && subcommandName.endsWith(']')) {
+                    subcommandName = subcommandName.slice(1, -1); // Remove [ and ]
+                  }
                   
                   // Create parameter list for this variant
                   const variantParams: Parameter[] = [];
@@ -701,11 +732,29 @@ export class CommandAutocomplete {
             const firstToken = tokens[0];
             
             // Determine if first token is a literal/subcommand or an argument
-            const isArgument = firstToken.startsWith('<') || firstToken.startsWith('[') || firstToken.startsWith('(');
+            // FIXED: Better detection for optional subcommands vs optional arguments
+            let isArgument = false;
+            if (firstToken.startsWith('<')) {
+              isArgument = true;
+            } else if (firstToken.startsWith('[') && firstToken.endsWith(']')) {
+              const inner = firstToken.slice(1, -1);
+              if (inner.startsWith('<') && inner.endsWith('>')) {
+                isArgument = true;
+              } else {
+                isArgument = false;
+              }
+            } else if (firstToken.startsWith('(') && firstToken.endsWith(')')) {
+              isArgument = true;
+            }
             
             if (!isArgument) {
               // First token is a literal - this is a nested subcommand variant
-              const nestedSubcommandName = firstToken;
+              let nestedSubcommandName = firstToken;
+              
+              // Strip optional brackets if present
+              if (nestedSubcommandName.startsWith('[') && nestedSubcommandName.endsWith(']')) {
+                nestedSubcommandName = nestedSubcommandName.slice(1, -1);
+              }
               
               // Create parameter list for this variant
               const variantParams: Parameter[] = [];
